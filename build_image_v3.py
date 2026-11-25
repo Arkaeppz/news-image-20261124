@@ -253,6 +253,24 @@ def sc_virus(d, x, y, w, h, label="", sub=""):
     for dxr, dyr in [(-0.35, -0.2), (0.3, -0.35), (0.05, 0.3), (-0.15, 0.05)]:
         d.ellipse([cx + r * dxr - 3, cy + r * dyr - 3, cx + r * dxr + 3, cy + r * dyr + 3], fill=(240, 200, 150))
 
+def sc_store(d, x, y, w, h, label="", sub=""):
+    d.rectangle([x, y, x + w, y + h], fill=(238, 233, 220))
+    bx, by, bw, bh = x + w * 0.2, y + h * 0.26, w * 0.6, h * 0.66
+    d.rectangle([bx, by, bx + bw, by + bh], fill=(214, 205, 188))
+    # awning: a band of vertical stripes with a straight hem
+    n = 6
+    for i in range(n):
+        c = RED if i % 2 == 0 else (255, 250, 240)
+        ax = bx + i * (bw / n)
+        d.rectangle([ax, by, ax + bw / n, by + h * 0.15], fill=c)
+    d.line([bx, by + h * 0.15, bx + bw, by + h * 0.15], fill=INK, width=1)
+    # window + door
+    d.rectangle([bx + 8, by + h * 0.24, bx + bw * 0.55, by + bh - 8], fill=(70, 92, 110))
+    d.rectangle([bx + bw * 0.66, by + h * 0.24, bx + bw - 8, by + bh], fill=(110, 84, 60))
+    if label:
+        tf = F(SANSB, max(13, int(h * 0.26)))
+        d.text((x + w * 0.84, y + h * 0.34), label, font=tf, fill=RED)
+
 def sc_generic(d, x, y, w, h, label="", sub=""):
     d.rectangle([x, y, x + w, y + h], fill=SKY)
     cx, cy, r = x + w / 2, y + h / 2, h * 0.36
@@ -264,7 +282,7 @@ SCENES = {
     "summit": sc_summit, "drones": sc_drones, "radar": sc_radar, "fire": sc_fire,
     "ballot": sc_ballot, "car": sc_car, "score": sc_score, "ship": sc_ship,
     "power": sc_power, "health": sc_health, "gavel": sc_gavel, "generic": sc_generic,
-    "scales": sc_scales, "virus": sc_virus,
+    "scales": sc_scales, "virus": sc_virus, "store": sc_store,
 }
 
 # ---------------------------------------------------------------- world map
@@ -334,7 +352,8 @@ def card(d, x, y, w, h, story, big=False):
     # tag first, so the location gets the width that is really left
     tag_w = d.textlength(story["tag"], font=F(SANSB, 10)) + 12
     tag_chip(d, x + w - 8 - tag_w, y + 6, story["tag"])
-    d.text((x + 36, y + 9), fitw(d, story["loc"].upper(), F(SANSB, 10), w - 44 - tag_w - 8), font=F(SANSB, 10), fill=INK)
+    loc_t = story["loc"].upper()
+    d.text((x + 36, y + 9), fitw(d, loc_t, F(SANSB, 10), w - 44 - tag_w - 8), font=F(SANSB, 10), fill=INK)
     # scene
     sh = 76 if big else (62 if h > 200 else 50)
     sy = y + 31
@@ -345,10 +364,15 @@ def card(d, x, y, w, h, story, big=False):
     ty += 12
     hf = F(SERIFB, 20 if big else 15)
     hl = 22 if big else 16
-    ty = block(d, x + 10, ty, story["head"], hf, INK, w - 20, hl, 2)
+    # the headline may take a third line only if the summary keeps two of its own
+    sf_pre = F(SANS, 13 if big else 11)
+    sl_pre = 15 if big else 13
+    room = (y + h - 16) - ty
+    head_lines = max(1, min(3, int((room - 2 * sl_pre) // hl)))
+    ty = block(d, x + 10, ty, story["head"], hf, INK, w - 20, hl, head_lines)
     ty += 2
-    sf = F(SANS, 12 if big else 10)
-    sl = 14 if big else 12
+    sf = F(SANS, 13 if big else 11)
+    sl = 15 if big else 13
     # the summary gets whatever room is left above the source line — no more
     avail = (y + h - 16) - ty
     max_lines = max(1, int(avail // sl))
@@ -375,7 +399,7 @@ def render(day, out_path):
     M = 26
     # masthead
     d.rectangle([0, 0, W, 30], fill=NAVY)
-    d.text((M, 8), "THE WORLD IN ONE DAY", font=F(SANSB, 13), fill=(255, 255, 255))
+    d.text((M, 8), "ONE DAY, THE WHOLE WORLD", font=F(SANSB, 13), fill=(255, 255, 255))
     rt = f"{day['story_count']} STORIES · {day['region_count']} REGIONS · ALL FROM THIS ONE DAY"
     d.text((W - M - d.textlength(rt, font=F(SANSB, 12)), 8), rt, font=F(SANSB, 12), fill=GOLD)
     d.text((M, 38), day["date_line"], font=F(SERIFB, 57), fill=INK)
@@ -429,13 +453,13 @@ def render(day, out_path):
         ax = M + ci * colw
         ay = y3 + 19
         for n, code, text in chunk:
-            d.text((ax, ay), f"{n}", font=F(SANSB, 10), fill=RED)
-            d.rounded_rectangle([ax + 19, ay, ax + 45, ay + 12], radius=2, fill=NAVY)
+            d.text((ax, ay), f"{n}", font=F(SANSB, 11), fill=RED)
+            d.rounded_rectangle([ax + 21, ay, ax + 48, ay + 13], radius=2, fill=NAVY)
             cf = F(SANSB, 8)
             cw_ = d.textlength(code, font=cf)
-            d.text((ax + 32 - cw_ / 2, ay + 2), code, font=cf, fill=(255, 255, 255))
-            d.text((ax + 50, ay), fitw(d, text, F(SANS, 10), colw - 54), font=F(SANS, 10), fill=INK)
-            ay += 13.5
+            d.text((ax + 34.5 - cw_ / 2, ay + 2), code, font=cf, fill=(255, 255, 255))
+            d.text((ax + 53, ay), fitw(d, text, F(SANS, 11), colw - 57), font=F(SANS, 11), fill=INK)
+            ay += 14.5
     # map box
     mx = W - M - 318
     d.rounded_rectangle([mx, y3, W - M, y3 + 134], radius=6, fill=(240, 244, 248), outline=(190, 178, 150))
@@ -446,7 +470,7 @@ def render(day, out_path):
     y4 = y3 + 142
     d.rounded_rectangle([M, y4, W - M, y4 + 38], radius=5, outline=RED, width=2)
     d.text((M + 10, y4 + 5), "DATE CHECK", font=F(SANSB, 11), fill=RED)
-    block(d, M + 92, y4 + 4, day["date_check"], F(SANS, 10), INK, W - 2 * M - 104, 12, 2)
+    block(d, M + 92, y4 + 4, day["date_check"], F(SANS, 11), INK, W - 2 * M - 104, 13, 2)
     # legend
     ly = y4 + 46
     d.text((M, ly), "HOW SURE:", font=F(SANSB, 10), fill=INK)
