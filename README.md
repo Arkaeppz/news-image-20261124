@@ -9,9 +9,11 @@ An entry for the make.fun bounty
 
 `main.ts` copies `entry.png` to the output directory, byte for byte.
 `entry.png` (1024×1024) is a one-page broadsheet of that day's world news:
-26 numbered stories across 7 regions — 10 illustrated cards plus 16 briefs —
-with a UTC timeline, a day-in-numbers box whose every figure is backed by a
-card, a pinned world map and a date-check box, drawn by `build_image_v3.py`
+35 numbered stories across 7 regions — 10 illustrated cards, each with its
+key figure as a banner inside the scene, plus 25 briefs that each name their
+source — with a UTC timeline, a day-in-numbers box whose every figure is
+backed by a card, a pinned world map and a date-check box naming five
+earlier-day stories deliberately left out, drawn by `build_image_v4.py`
 from the day data in `day_ni24.py`, cross-checked across Principia's daily
 summary, Daily Summary Of, Horizon, Just Security's Early Edition, Broadcast
 Prism and the IQMia worldwide summary:
