@@ -8,11 +8,8 @@ An entry for the make.fun bounty
 [Sum up 24 November's world news in one image](https://make.fun/bounty/news-image-20261124).
 
 `main.ts` copies `entry.png` to the output directory, byte for byte.
-`entry.png` (1024×1024) is a one-page broadsheet of that day's world news:
-17 numbered stories with region and confidence tags, a day-in-numbers bar and
-a date-check box, drawn by `build_image.py` from the day's reporting,
-cross-checked across Principia's daily summary, Daily Summary Of, Horizon,
-Just Security's Early Edition, Broadcast Prism and the IQMia worldwide summary:
+
+`entry.png` (1024×1024) is a one-page broadsheet of that day's world news: 28 numbered stories with region and confidence tags, illustrated story cards, a day-in-numbers box, a UTC timeline, a pinned world map and a date-check box, drawn by `build_image_v3.py` from the day data in `day_ni24.py`, cross-checked across Principia's daily summary, Daily Summary Of, Horizon, Just Security's Early Edition, Broadcast Prism and the IQMia worldwide summary:
 
 - A US jury convicts Huawei of trade-secret conspiracy and bank fraud.
 - Four tankers hit mines in the Strait of Hormuz; Iran refuses talks.
